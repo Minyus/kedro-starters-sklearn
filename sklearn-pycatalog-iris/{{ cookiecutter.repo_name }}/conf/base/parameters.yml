@@ -1,0 +1,26 @@
+# Dataset: Iris 
+# URL: https://www.kaggle.com/uciml/iris/data
+# Modification: for each species, setosa is encoded to 0, versicolor is encoded to 1, and virginica samples were removed.
+# Split: for each species, first 25 samples were included in train.csv, and last 25 samples were included in test.csv.
+#
+# Columns used as features 
+features: 
+  - sepal_length
+  # - sepal_width
+  # - petal_length
+  # - petal_width 
+#
+# Column used as the target
+target: species
+
+
+# Dataset: Kaggle Titanic
+# URL: https://www.kaggle.com/c/titanic/data
+#
+# Columns used as features 
+# features:
+#   - Pclass # The passenger's ticket class
+#   - Parch # # of parents / children aboard the Titanic
+#
+# Columns used as features 
+# target: Survived
