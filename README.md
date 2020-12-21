@@ -1,6 +1,10 @@
-# kedro-starters-sklearn
+# Kedro Starters using Scikit-learn and MLflow
 
-This repository provides Kedro starter templates that demonstrate how to use Kedro (0.17.0 or later) and Scikit-learn to train a Logistic Regression model developed based on [Kedro's official starters](https://github.com/quantumblacklabs/kedro-starters). 
+This repository provides Kedro starters that demonstrate how to use Kedro (0.17.0 or later) developed based on [`pandas-iris` starter](https://github.com/quantumblacklabs/kedro-starters/tree/master/pandas-iris) including:
+
+- `sklearn-iris` trains a Logistic Regression model using Scikit-learn.
+- `sklearn-pycatalog-iris` allows to define Kedro Catalog in Python code in addition to YAML.
+- `sklearn-mlflow-pycatalog-iris` adds experiment tracking feature using MLflow.
 
 <p align="center">
 <img src="_doc_images/kedro_viz.png">
@@ -74,7 +78,7 @@ See the [document](https://code.visualstudio.com/docs/editor/debugging#_launch-c
 3. Modify `/path/to/project/directory/base/parameters.yml` to set parameters appropriate for the dataset (commented out in default)
 
 
-## `sklearn-pycatalog-iris` Template
+## `sklearn-pycatalog-iris` template
 
 This template adds flexibility to define your Kedro DataSet Catalog in Python code ([`src/<python_package>/catalogs/catalog.py`](sklearn-pycatalog-iris/%7B%7B%20cookiecutter.repo_name%20%7D%7D/src/%7B%7B%20cookiecutter.python_package%20%7D%7D/catalogs/catalog.py)) in addition to YAML ([`conf/base/catalog.yml`](sklearn-pycatalog-iris/%7B%7B%20cookiecutter.repo_name%20%7D%7D/conf/base/catalog.yml
 )).
@@ -99,7 +103,7 @@ You may prefer this template if:
     ```
 3. Follow the same steps as `sklearn-iris` template.
 
-## `sklearn-mlflow-pycatalog-iris` Template
+## `sklearn-mlflow-pycatalog-iris` template
 
 ### How to use
 
