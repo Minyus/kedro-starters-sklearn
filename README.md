@@ -32,6 +32,9 @@ Pipeline visualized by Kedro-viz
     ```bash
     kedro new --starter https://github.com/Minyus/kedro-starters-sklearn.git --directory sklearn-iris
     ```
+    As explained by [Kedro's documentaion](https://kedro.readthedocs.io/en/stable/02_get_started/04_new_project.html), enter project_name, repo_name, and python_package. 
+
+    Note: As your Python package name, choose a unique name such as "kaggle_fraud_detection" and avoid a generic name such as "test" or "sklearn" used by another package. You can see the list of importable packages by running `python -c "help('modules')"`.
 
 3. Change the current directory to the generated project directory.
 
