@@ -5,6 +5,7 @@ This repository provides Kedro starters that demonstrate how to use Kedro (0.17.
 - `sklearn-iris` trains a Logistic Regression model using Scikit-learn.
 - `sklearn-pycatalog-iris` allows to define Kedro Catalog in Python code in addition to YAML.
 - `sklearn-mlflow-pycatalog-iris` adds experiment tracking feature using MLflow.
+- `sklearn-mlflow-yamlholic-iris` enables you to define Python objects (e.g. models), Kedro pipeline, and run config in YAML.
 
 <p align="center">
 <img src="_doc_images/kedro_viz.png">
@@ -108,6 +109,16 @@ You may prefer this template if:
 
 ## `sklearn-mlflow-pycatalog-iris` template
 
+This template integrates MLflow to Kedro using [PipelineX](https://github.com/Minyus/pipelinex). Even without writing MLflow code, you can:
+- configure MLflow Tracking
+- log inputs and outputs of Python functions set up as Kedro nodes as parameters (e.g. features used to train the model) and metrics (e.g. F1 score).
+- log execution time for each Kedro node and DataSet loading/saving as metrics.
+- log artifacts (e.g. models, execution time Gantt Chart visualized by Plotly, `parameters.yml` file)
+
+In this template, MLflow logging is configured in Python code at [`src/<python_package>/mlflow/mlflow_config.py`](sklearn-mlflow-pycatalog-iris/%7B%7B%20cookiecutter.repo_name%20%7D%7D/src/%7B%7B%20cookiecutter.python_package%20%7D%7D/mlflow/mlflow_config.py) 
+
+See [here](https://github.com/Minyus/pipelinex#integration-with-mlflow-by-kedro-hooks-callbacks) for details.
+
 ### How to use
 
 1. Install dependencies.
@@ -121,7 +132,7 @@ You may prefer this template if:
     ```bash
     kedro new --starter https://github.com/Minyus/kedro-starters-sklearn.git --directory sklearn-mlflow-pycatalog-iris
     ```
-3. Follow the same steps as `sklearn-iris` template.
+3. Follow the same steps as `sklearn-pycatalog-iris` template.
 
 ### Access MLflow web UI
 
@@ -141,8 +152,26 @@ Logged metrics shown in MLflow's UI
 Gantt chart for execution time, generated using Plotly, shown in MLflow's UI
 </p>
 
-### MLflow logging configuration
+## `sklearn-mlflow-yamlholic-iris` template
 
-MLflow logging is configured in Python code at [`src/<python_package>/mlflow/mlflow_config.py`](sklearn-mlflow-pycatalog-iris/%7B%7B%20cookiecutter.repo_name%20%7D%7D/src/%7B%7B%20cookiecutter.python_package%20%7D%7D/mlflow/mlflow_config.py) 
+This template enables you to define Python objects (e.g. Scikit-learn models), Kedro pipeline, and run config in YAML using [PipelineX](https://github.com/Minyus/pipelinex).
+If you love YAML, this is the one for you.
 
-See [here](https://github.com/Minyus/pipelinex#integration-with-mlflow-by-kedro-hooks-callbacks) regarding the MLflow logging options.
+For details, please see:
+- https://github.com/Minyus/pipelinex#pythonic-enhanced-yamljson-hatchdict
+- https://github.com/Minyus/pipelinex#enhanced-kedro-context-yaml-interface-for-kedro-pipelines
+
+### How to use
+
+1. Install dependencies.
+
+    ```bash
+    pip install 'kedro>=0.17.0' pandas scikit-learn mlflow plotly
+    ```
+
+2. Generate your Kedro starter project from `sklearn-mlflow-yamlholic-iris` directory.
+
+    ```bash
+    kedro new --starter https://github.com/Minyus/kedro-starters-sklearn.git --directory sklearn-mlflow-yamlholic-iris
+    ```
+3. Follow the same steps as `sklearn-mlflow-pycatalog-iris` template.
