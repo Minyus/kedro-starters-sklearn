@@ -138,9 +138,9 @@ See [here](https://github.com/Minyus/pipelinex#integration-with-mlflow-by-kedro-
 
 To access the MLflow web UI, launch the MLflow server.
 
-    ```bash
-    mlflow server --host 0.0.0.0 --backend-store-uri sqlite:///mlruns/sqlite.db --default-artifact-root ./mlruns
-    ```
+```bash
+mlflow server --host 0.0.0.0 --backend-store-uri sqlite:///mlruns/sqlite.db --default-artifact-root ./mlruns
+```
 
 <p align="center">
 <img src="_doc_images/mlflow_ui_metrics.png">
