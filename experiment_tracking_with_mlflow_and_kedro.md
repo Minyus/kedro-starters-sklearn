@@ -6,6 +6,16 @@ paginate: true
 
 # Experiment Tracking with MLflow and Kedro
 
+<p align="right">
+Yusuke Minami
+</p>
+
+<p align="center">
+<img src="https://mlflow.org/docs/latest/_static/MLflow-logo-final-black.png" height=100>
+<img src="https://raw.githubusercontent.com/quantumblacklabs/kedro/develop/static/img/kedro_banner.png" height=200>
+</p>
+
+
 ## Experiment Tracking
 
 Store model info to enable to query and visualize ML experiments
