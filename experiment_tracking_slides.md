@@ -55,7 +55,7 @@ if enable_mlflow:
     import os
     import mlflow
 
-    experiment_name = "my_experiment"
+    experiment_name = "experiment_001"
 
     experiment_id = mlflow.get_experiment_by_name(experiment_name).experiment_id
     mlflow.start_run(experiment_id=experiment_id, run_name=None)
@@ -289,6 +289,14 @@ mlflow_hooks = (
         enable_mlflow=True,  # Enable logging to MLflow
     ),  # Log duration time to run each node (task)
 ```
+
+## Installation
+
+```bash
+pip install 'kedro>=0.17.0' mlflow pipelinex plotly
+```
+
+![bg 100% right:45%](https://raw.githubusercontent.com/Minyus/pipelinex_sklearn/master/img/mlflow_ui.png)
 
 ## Difference between Kedro and Airflow
 
