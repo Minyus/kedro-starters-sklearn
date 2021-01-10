@@ -136,48 +136,6 @@ Messy!
 - main.py
 ```
 
-## catalog.py example
-
-```python
-from kedro.extras.datasets.pandas import CSVDataSet
-from kedro.extras.datasets.pickle import PickleDataSet
-
-catalog_dict = {
-    "train_df": CSVDataSet(
-        filepath="data/01_raw/train.csv",
-    ),
-    "test_df": CSVDataSet(
-        filepath="data/01_raw/test.csv",
-    ),
-    "model": PickleDataSet(filepath="data/06_models/model.pkl"),
-    "pred_df": CSVDataSet(
-        filepath="data/07_model_output/pred.csv",
-        save_args={"float_format": "%.16e"},
-    ),
-}
-```
-
-## catalog.yml example
-
-```yaml
-train_df:
-  type: pandas.CSVDataSet
-  filepath: data/01_raw/train.csv
-
-test_df:
-  type: pandas.CSVDataSet
-  filepath: data/01_raw/test.csv
-
-model: 
-  type: pickle.PickleDataSet
-  filepath: data/06_models/model.pkl
-
-pred_df: 
-  type: pandas.CSVDataSet
-  filepath: data/07_model_output/pred.csv
-  save_args: {"float_format": "%.16e"}
-```
-
 ## nodes.py example: no Kedro/MLflow code included
 
 ```python
@@ -217,6 +175,38 @@ def evaluate_model(model, df: pd.DataFrame, cols_features: List[str], col_target
     score = float(f1_score(df[col_target], y_pred))
     log.info("F1 score: {:.3f}".format(score))
     return score
+```
+
+## catalog.py example
+
+```python
+from kedro.extras.datasets.pandas import CSVDataSet
+from kedro.extras.datasets.pickle import PickleDataSet
+
+catalog_dict = {
+    "train_df": CSVDataSet(
+        filepath="data/01_raw/train.csv",
+    ),
+    "test_df": CSVDataSet(
+        filepath="data/01_raw/test.csv",
+    ),
+    "model": PickleDataSet(filepath="data/06_models/model.pkl"),
+    "pred_df": CSVDataSet(
+        filepath="data/07_model_output/pred.csv",
+        save_args={"float_format": "%.16e"},
+    ),
+}
+```
+
+## parameters.yml example
+
+```yaml
+# Columns used as features 
+features: 
+  - sepal_length
+
+# Column used as the target
+target: species
 ```
 
 ## pipeline.py example
@@ -289,6 +279,23 @@ mlflow_hooks = (
         enable_mlflow=True,  # Enable logging to MLflow
     ),  # Log duration time to run each node (task)
 ```
+
+## Data Read/Write
+
+- Kedro DataSet interface
+    - 25 DataSets in [kedro.extras.datasets](https://kedro.readthedocs.io/en/stable/kedro.extras.datasets.html#data-sets)
+        - [kedro.extras.datasets.pandas.CSVDataSet](https://kedro.readthedocs.io/en/stable/kedro.extras.datasets.pandas.CSVDataSet.html#kedro.extras.datasets.pandas.CSVDataSet)
+        - [kedro.extras.datasets.pickle.PickleDataSet](https://kedro.readthedocs.io/en/stable/kedro.extras.datasets.pickle.PickleDataSet.html#kedro.extras.datasets.pickle.PickleDataSet)
+        - [kedro.extras.datasets.tensorflow.TensorFlowModelDataset](https://kedro.readthedocs.io/en/stable/kedro.extras.datasets.tensorflow.TensorFlowModelDataset.html#kedro.extras.datasets.tensorflow.TensorFlowModelDataset)
+    - More DataSets in [pipelinex.extras.datasets](https://github.com/Minyus/pipelinex#additional-kedro-datasets-data-interface-sets)
+        - [pipelinex.ImagesLocalDataSet](https://github.com/Minyus/pipelinex/blob/master/src/pipelinex/extras/datasets/pillow/images_dataset.py
+        )
+            - loads/saves multiple numpy arrays (RGB, BGR, or monochrome image) from/to a folder in local storage using `pillow` package
+        - [pipelinex.IterableImagesDataSet](https://github.com/Minyus/pipelinex/blob/master/src/pipelinex/extras/datasets/torchvision/iterable_images_dataset.py)
+            - wrapper of [`torchvision.datasets.ImageFolder`](https://pytorch.org/docs/stable/torchvision/datasets.html#imagefolder) 
+        - [pipelinex.AsyncAPIDataSet](https://github.com/Minyus/pipelinex/blob/master/src/pipelinex/extras/datasets/httpx/async_api_dataset.py)
+            - downloads multiple contents (e.g. images) by async HTTP requests
+- Include in task processing code: Low modularity, but quicker in short-term
 
 ## Installation
 
