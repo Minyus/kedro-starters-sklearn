@@ -96,6 +96,7 @@ Messy!
 
 ## Kedro can resolve the mess 
 
+```
 - Pipeline (DAG; Python code or YAML)
     - Node1
         - DataSet(s) for reading
@@ -109,11 +110,116 @@ Messy!
     - DataSet2
 - Hooks (Inject non-task code between nodes)
     - MLflow logging 
+```
 
 ![bg 100% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
 
 
-## Kedro Pipeline example Python code
+## Kedro project directory tree
+
+```
+- conf
+    - base
+        - catalog.yml
+        - logging.yml
+        - parameters.yml
+- src
+    - <package>
+        - catalogs
+            - catalog.py
+        - mlflow
+            - mlflow_config.py
+        - pipelines
+            - <pipeline>
+                - pipeline.py
+                - <nodes>.py
+- main.py
+```
+
+## catalog.py example
+
+```python
+from kedro.extras.datasets.pandas import CSVDataSet
+from kedro.extras.datasets.pickle import PickleDataSet
+
+catalog_dict = {
+    "train_df": CSVDataSet(
+        filepath="data/01_raw/train.csv",
+    ),
+    "test_df": CSVDataSet(
+        filepath="data/01_raw/test.csv",
+    ),
+    "model": PickleDataSet(filepath="data/06_models/model.pkl"),
+    "pred_df": CSVDataSet(
+        filepath="data/07_model_output/pred.csv",
+        save_args={"float_format": "%.16e"},
+    ),
+}
+```
+
+## catalog.yml example
+
+```yaml
+train_df:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/train.csv
+
+test_df:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/test.csv
+
+model: 
+  type: pickle.PickleDataSet
+  filepath: data/06_models/model.pkl
+
+pred_df: 
+  type: pandas.CSVDataSet
+  filepath: data/07_model_output/pred.csv
+  save_args: {"float_format": "%.16e"}
+```
+
+## nodes.py example: no Kedro/MLflow code included
+
+```python
+from logging import getLogger
+from typing import List
+
+import pandas as pd
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import f1_score
+
+
+log = getLogger(__name__)
+
+
+def init_model():
+    return LogisticRegression(
+        C=1.23456,
+        max_iter=987,
+        random_state=42,
+    )
+
+
+def train_model(model, df: pd.DataFrame, cols_features: List[str], col_target: str):
+    # TODO: Add validation (Hold-out or Cross-Validation)
+    # TODO: Add error handling
+    model.fit(df[cols_features], df[col_target])
+    return model
+
+
+def run_inference(model, df: pd.DataFrame, cols_features: List[str]):
+    df["pred_proba"] = model.predict_proba(df[cols_features])[:, 1]
+    return df
+
+
+def evaluate_model(model, df: pd.DataFrame, cols_features: List[str], col_target: str):
+    y_pred = model.predict(df[cols_features])
+    score = float(f1_score(df[col_target], y_pred))
+    log.info("F1 score: {:.3f}".format(score))
+    return score
+```
+
+## pipeline.py example
 
 ```python
 from kedro.pipeline import Pipeline, node
@@ -153,28 +259,8 @@ def create_pipeline(**kwargs):
         ]
     )
 ```
-## Kedro Catalog example Python code
 
-```python
-from kedro.extras.datasets.pandas import CSVDataSet
-from kedro.extras.datasets.pickle import PickleDataSet
-
-catalog_dict = {
-    "train_df": CSVDataSet(
-        filepath="data/01_raw/train.csv",
-    ),
-    "test_df": CSVDataSet(
-        filepath="data/01_raw/test.csv",
-    ),
-    "model": PickleDataSet(filepath="data/06_models/model.pkl"),
-    "pred_df": CSVDataSet(
-        filepath="data/07_model_output/pred.csv",
-        save_args={"float_format": "%.16e"},
-    ),
-}
-```
-
-## Configure MLflow logging
+## mlflow_config.py example
 
 ```python
 import pipelinex
@@ -204,33 +290,40 @@ mlflow_hooks = (
     ),  # Log duration time to run each node (task)
 ```
 
-## Benefits of Kedro
-
-- Inject non-task code (e.g. MLflow logging, measure execution time)
-- Parallel run of Python functions (using `multiprocessing` under the hood)
-- Reusable data interfaces ("DataSet")
-- Visualization of pipeline DAG
-- Benchmark of execution time
-
-![bg 100% right:50%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
-
 ## Difference between Kedro and Airflow
 
-Airflow: Workflow passing data by database/storage
-Kedro: Pipeline passing data in memory/files
+Airflow: Intermediate data need to be saved in storage/database
+Kedro: Intermediate data can be in memory or saved in files/storage/database
 
-Recommended to use in different level
+Can be used together in different level
 
 - Airflow DAG
-    - Airflow Operator1 = Kedro Pipeline1
+    - Airflow Operator1 => Kedro Pipeline1
         - Kedro Node1
         - Kedro Node2
-    - Airflow Operator2 = Kedro Pipeline2
+    - Airflow Operator2 => Kedro Pipeline2
         - Kedro Node1
         - Kedro Node2
 
 Reference:
 https://github.com/Minyus/Python_Packages_for_Pipeline_Workflow
+
+## Pros and cons of Kedro
+
+- Pros:
+    - High modularity/reusability
+        - data R/W 
+        - task processing
+        - non-task code
+            - MLflow logging
+            - measure execution time
+    - Parallel run of processing 
+        - using `multiprocessing` under the hood
+    - Visualization of pipeline DAG
+- Cons:
+    - It takes some time to learn
+
+![bg 90% right:45%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
 
 ## References
 
