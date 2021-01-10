@@ -166,7 +166,7 @@ For details, please see:
 1. Install dependencies.
 
     ```bash
-    pip install 'kedro>=0.17.0' pandas scikit-learn mlflow plotly
+    pip install 'kedro>=0.17.0' pandas scikit-learn mlflow pipelinex plotly
     ```
 
 2. Generate your Kedro starter project from `sklearn-mlflow-yamlholic-iris` directory.
