@@ -48,7 +48,9 @@ https://github.com/Minyus/Tools_for_ML_Lifecycle_Management
 
 ## How MLflow works
 
-![](https://raw.githubusercontent.com/Minyus/Tools_for_ML_Lifecycle_Management/main/mlflow/mlflow_experiment_tracking.drawio.svg)
+<p align="center">
+<img src="https://raw.githubusercontent.com/Minyus/Tools_for_ML_Lifecycle_Management/main/mlflow/mlflow_experiment_tracking.drawio.svg" height=500>
+</p>
 
 ## MLflow Web UI
 
@@ -104,49 +106,81 @@ Messy!
     - Need to add 2 separate lines (before and after)
     - Need to specify unique names for each subtask
 
-## Kedro can resolve the mess 
+## Kedro can resolve the mess
 
 ```
 - Pipeline (DAG; Python code or YAML)
     - Node1
-        - DataSet(s) for reading
+        - Config for reading data (filepath, args)
         - Python function
-        - DataSet(s) for writing
+        - Config for writing data (filepath, args)
     - Node2
-- Catalog (YAML or Python code)
-    - DataSet1
-        - filepath
-        - arguments
-    - DataSet2
-- Hooks (Inject non-task code between nodes)
-    - MLflow logging 
+- Hooks (Inject non-task code between Nodes)
+    - MLflow logging
+    - Measure execution time 
+```
+
+![bg 100% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
+
+## pipeline.py example
+
+```python
+Pipeline(
+    [
+        node(func=init_model, inputs=None, outputs="init_model"),
+        node(
+            inputs=["init_model", "train_df", "params:features", "params:target"],
+            func=train_model,
+            outputs="model",
+        ),
+        node(
+            inputs=["model", "train_df", "params:features", "params:target"],
+            func=evaluate_model,
+            outputs="score",
+        ),
+        node(
+            inputs=["model", "test_df", "params:features"],
+            func=run_inference,
+            outputs="pred_df",
+        ),
+    ]
+)
 ```
 
 ![bg 100% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
 
 
-## Kedro project directory tree
+## mlflow_config.py example
 
-```
-- conf
-    - base
-        - catalog.yml
-        - logging.yml
-        - parameters.yml
-- src
-    - <package>
-        - catalogs
-            - catalog.py
-        - mlflow
-            - mlflow_config.py
-        - pipelines
-            - <pipeline>
-                - pipeline.py
-                - <nodes>.py
-- main.py
+```python
+import pipelinex
+
+mlflow_hooks = (
+    pipelinex.MLflowBasicLoggerHook(
+        enable_mlflow=True,  # Enable configuring and logging to MLflow
+        uri="sqlite:///mlruns/sqlite.db",
+        experiment_name="experiment_001",
+        artifact_location="./mlruns/experiment_001",
+        offset_hours=0,  # Specify the offset hour (e.g. 0 for UTC/GMT +00:00) to log in MLflow
+    ),  # Configure and log duration time for the pipeline
+    pipelinex.MLflowArtifactsLoggerHook(
+        enable_mlflow=True,  # Enable logging to MLflow
+        filepaths_before_pipeline_run=[
+            "conf/base/parameters.yml"
+        ],  # Optionally specify the file paths to log before pipeline is run
+        filepaths_after_pipeline_run=[
+            "data/06_models/model.pkl"
+        ],  # Optionally specify the file paths to log after pipeline is run
+    ),  # Log artifacts of specified file paths and dataset names
+    pipelinex.MLflowDataSetsLoggerHook(
+        enable_mlflow=True,  # Enable logging to MLflow
+    ),  # Log output datasets of (list of) float, int, and str classes
+    pipelinex.MLflowTimeLoggerHook(
+        enable_mlflow=True,  # Enable logging to MLflow
+    ),  # Log duration time to run each node (task)
 ```
 
-## nodes.py example: no Kedro/MLflow code included
+## nodes.py example: no Kedro/MLflow
 
 ```python
 from logging import getLogger
@@ -187,6 +221,50 @@ def evaluate_model(model, df: pd.DataFrame, cols_features: List[str], col_target
     return score
 ```
 
+![bg 100% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
+
+
+## Kedro project directory tree
+
+```
+- conf
+    - base
+        - catalog.yml
+        - logging.yml
+        - parameters.yml
+- src
+    - <package>
+        - catalogs
+            - catalog.py
+        - mlflow
+            - mlflow_config.py
+        - pipelines
+            - <pipeline>
+                - pipeline.py
+                - <nodes>.py
+- main.py
+```
+
+![bg 100% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
+
+
+## Data Read/Write
+
+- Kedro DataSet interface
+    - 25 DataSets in [kedro.extras.datasets](https://kedro.readthedocs.io/en/stable/kedro.extras.datasets.html#data-sets)
+        - [kedro.extras.datasets.pandas.CSVDataSet](https://kedro.readthedocs.io/en/stable/kedro.extras.datasets.pandas.CSVDataSet.html#kedro.extras.datasets.pandas.CSVDataSet)
+        - [kedro.extras.datasets.pickle.PickleDataSet](https://kedro.readthedocs.io/en/stable/kedro.extras.datasets.pickle.PickleDataSet.html#kedro.extras.datasets.pickle.PickleDataSet)
+        - [kedro.extras.datasets.tensorflow.TensorFlowModelDataset](https://kedro.readthedocs.io/en/stable/kedro.extras.datasets.tensorflow.TensorFlowModelDataset.html#kedro.extras.datasets.tensorflow.TensorFlowModelDataset)
+    - More DataSets in [pipelinex.extras.datasets](https://github.com/Minyus/pipelinex#additional-kedro-datasets-data-interface-sets)
+        - [pipelinex.ImagesLocalDataSet](https://github.com/Minyus/pipelinex/blob/master/src/pipelinex/extras/datasets/pillow/images_dataset.py
+        )
+            - loads/saves multiple numpy arrays (RGB, BGR, or monochrome image) from/to a folder in local storage using `pillow` package
+        - [pipelinex.IterableImagesDataSet](https://github.com/Minyus/pipelinex/blob/master/src/pipelinex/extras/datasets/torchvision/iterable_images_dataset.py)
+            - wrapper of [`torchvision.datasets.ImageFolder`](https://pytorch.org/docs/stable/torchvision/datasets.html#imagefolder) 
+        - [pipelinex.AsyncAPIDataSet](https://github.com/Minyus/pipelinex/blob/master/src/pipelinex/extras/datasets/httpx/async_api_dataset.py)
+            - downloads multiple contents (e.g. images) by async HTTP requests
+- Include in task processing code: Low modularity, but often quicker in short-term
+
 ## catalog.py example
 
 ```python
@@ -208,6 +286,8 @@ catalog_dict = {
 }
 ```
 
+![bg 100% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
+
 ## parameters.yml example
 
 ```yaml
@@ -219,93 +299,8 @@ features:
 target: species
 ```
 
-## pipeline.py example
+![bg 100% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
 
-```python
-from kedro.pipeline import Pipeline, node
-
-from .nodes import init_model, train_model, evaluate_model, run_inference
-
-
-def create_pipeline(**kwargs):
-    return Pipeline(
-        [
-            node(func=init_model, inputs=None, outputs="init_model"),
-            node(
-                func=train_model,
-                inputs=[
-                    "init_model",
-                    "train_df",
-                    "params:features",
-                    "params:target",
-                ],
-                outputs="model",
-            ),
-            node(
-                func=evaluate_model,
-                inputs=[
-                    "model",
-                    "train_df",
-                    "params:features",
-                    "params:target",
-                ],
-                outputs="score",
-            ),
-            node(
-                func=run_inference,
-                inputs=["model", "test_df", "params:features"],
-                outputs="pred_df",
-            ),
-        ]
-    )
-```
-
-## mlflow_config.py example
-
-```python
-import pipelinex
-
-mlflow_hooks = (
-    pipelinex.MLflowBasicLoggerHook(
-        enable_mlflow=True,  # Enable configuring and logging to MLflow
-        uri="sqlite:///mlruns/sqlite.db",
-        experiment_name="experiment_001",
-        artifact_location="./mlruns/experiment_001",
-        offset_hours=0,  # Specify the offset hour (e.g. 0 for UTC/GMT +00:00) to log in MLflow
-    ),  # Configure and log duration time for the pipeline
-    pipelinex.MLflowArtifactsLoggerHook(
-        enable_mlflow=True,  # Enable logging to MLflow
-        filepaths_before_pipeline_run=[
-            "conf/base/parameters.yml"
-        ],  # Optionally specify the file paths to log before pipeline is run
-        filepaths_after_pipeline_run=[
-            "data/06_models/model.pkl"
-        ],  # Optionally specify the file paths to log after pipeline is run
-    ),  # Log artifacts of specified file paths and dataset names
-    pipelinex.MLflowDataSetsLoggerHook(
-        enable_mlflow=True,  # Enable logging to MLflow
-    ),  # Log output datasets of (list of) float, int, and str classes
-    pipelinex.MLflowTimeLoggerHook(
-        enable_mlflow=True,  # Enable logging to MLflow
-    ),  # Log duration time to run each node (task)
-```
-
-## Data Read/Write
-
-- Kedro DataSet interface
-    - 25 DataSets in [kedro.extras.datasets](https://kedro.readthedocs.io/en/stable/kedro.extras.datasets.html#data-sets)
-        - [kedro.extras.datasets.pandas.CSVDataSet](https://kedro.readthedocs.io/en/stable/kedro.extras.datasets.pandas.CSVDataSet.html#kedro.extras.datasets.pandas.CSVDataSet)
-        - [kedro.extras.datasets.pickle.PickleDataSet](https://kedro.readthedocs.io/en/stable/kedro.extras.datasets.pickle.PickleDataSet.html#kedro.extras.datasets.pickle.PickleDataSet)
-        - [kedro.extras.datasets.tensorflow.TensorFlowModelDataset](https://kedro.readthedocs.io/en/stable/kedro.extras.datasets.tensorflow.TensorFlowModelDataset.html#kedro.extras.datasets.tensorflow.TensorFlowModelDataset)
-    - More DataSets in [pipelinex.extras.datasets](https://github.com/Minyus/pipelinex#additional-kedro-datasets-data-interface-sets)
-        - [pipelinex.ImagesLocalDataSet](https://github.com/Minyus/pipelinex/blob/master/src/pipelinex/extras/datasets/pillow/images_dataset.py
-        )
-            - loads/saves multiple numpy arrays (RGB, BGR, or monochrome image) from/to a folder in local storage using `pillow` package
-        - [pipelinex.IterableImagesDataSet](https://github.com/Minyus/pipelinex/blob/master/src/pipelinex/extras/datasets/torchvision/iterable_images_dataset.py)
-            - wrapper of [`torchvision.datasets.ImageFolder`](https://pytorch.org/docs/stable/torchvision/datasets.html#imagefolder) 
-        - [pipelinex.AsyncAPIDataSet](https://github.com/Minyus/pipelinex/blob/master/src/pipelinex/extras/datasets/httpx/async_api_dataset.py)
-            - downloads multiple contents (e.g. images) by async HTTP requests
-- Include in task processing code: Low modularity, but quicker in short-term
 
 ## Installation
 
@@ -317,8 +312,7 @@ pip install 'kedro>=0.17.0' mlflow pipelinex plotly
 
 ## Difference between Kedro and Airflow
 
-Airflow: Intermediate data need to be saved in storage/database
-Kedro: Intermediate data can be in memory or saved in files/storage/database
+![](_doc_images/comp_airflow_kedro.drawio.svg)
 
 Can be used together in different level
 
@@ -327,8 +321,6 @@ Can be used together in different level
         - Kedro Node1
         - Kedro Node2
     - Airflow Operator2 => Kedro Pipeline2
-        - Kedro Node1
-        - Kedro Node2
 
 Reference:
 https://github.com/Minyus/Python_Packages_for_Pipeline_Workflow
@@ -337,14 +329,14 @@ https://github.com/Minyus/Python_Packages_for_Pipeline_Workflow
 
 - Pros:
     - High modularity/reusability
-        - data R/W 
+        - data read/write 
         - task processing
-        - non-task code
+        - non-task code (with `PipelineX`)
             - MLflow logging
             - measure execution time
     - Parallel run of processing 
-        - using `multiprocessing` under the hood
-    - Visualization of pipeline DAG
+        - using `multiprocessing`
+    - Visualization of pipeline DAG (with `Kedro-Viz`)
 - Cons:
     - It takes some time to learn
 
