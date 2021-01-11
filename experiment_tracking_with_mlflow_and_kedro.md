@@ -12,13 +12,13 @@ Yusuke Minami
 
 <p align="center">
 <img src="https://mlflow.org/docs/latest/_static/MLflow-logo-final-black.png" height=100>
-<img src="https://raw.githubusercontent.com/quantumblacklabs/kedro/develop/static/img/kedro_banner.png" height=200>
+<img src="https://raw.githubusercontent.com/quantumblacklabs/kedro/develop/static/img/kedro_banner.png" height=250>
 </p>
 
 
 ## Experiment Tracking
 
-Store model info to enable to query and visualize ML experiments
+Store historical model info to compare, visualize, and investigate
 
 - metadata (in database)
     - parameters (string)
