@@ -8,18 +8,30 @@ mlflow_hooks = (
         artifact_location="./mlruns/experiment_001",
         offset_hours=0,  # Specify the offset hour (e.g. 0 for UTC/GMT +00:00) to log in MLflow
     ),  # Configure and log duration time for the pipeline
+    pipelinex.MLflowCatalogLoggerHook(
+        enable_mlflow=True,  # Enable logging to MLflow
+        mlflow_catalog={
+            "params:features": "p",
+            "params:target": "p",
+            "model": "pkl",
+            "score": "m",
+            "pred_df": "csv",
+        },
+    ),
     pipelinex.MLflowArtifactsLoggerHook(
         enable_mlflow=True,  # Enable logging to MLflow
         filepaths_before_pipeline_run=[
             "conf/base/parameters.yml"
-        ],  # Optionally specify the file paths to log before pipeline is run
-        filepaths_after_pipeline_run=[
-            "data/06_models/model.pkl"
-        ],  # Optionally specify the file paths to log after pipeline is run
-    ),  # Log artifacts of specified file paths and dataset names
-    pipelinex.MLflowDataSetsLoggerHook(
+        ],  # Optionally specify the file paths to log before the pipeline runs
+        filepaths_after_pipeline_run=[],  # Optionally specify the file paths to log after the pipeline runs
+    ),
+    pipelinex.MLflowEnvVarsLoggerHook(
         enable_mlflow=True,  # Enable logging to MLflow
-    ),  # Log output datasets of (list of) float, int, and str classes
+        param_env_vars=[
+            "HOSTNAME"
+        ],  # Environment variables to log to MLflow as parameters
+        metric_env_vars=[],  # Environment variables to log to MLflow as metrics
+    ),
     pipelinex.MLflowTimeLoggerHook(
         enable_mlflow=True,  # Enable logging to MLflow
     ),  # Log duration time to run each node (task)
