@@ -2,6 +2,8 @@
 
 from kedro.extras.datasets.pandas import CSVDataSet
 from kedro.extras.datasets.pickle import PickleDataSet
+from pipelinex import MLflowDataSet
+
 
 catalog_dict = {
     "train_df": CSVDataSet(
@@ -10,9 +12,6 @@ catalog_dict = {
     "test_df": CSVDataSet(
         filepath="data/01_raw/test.csv",
     ),
-    "model": PickleDataSet(filepath="data/06_models/model.pkl"),
-    "pred_df": CSVDataSet(
-        filepath="data/07_model_output/pred.csv",
-        save_args={"float_format": "%.16e"},
-    ),
+    "model": MLflowDataSet(dataset="pkl"),
+    "pred_df": MLflowDataSet(dataset="csv"),
 }
