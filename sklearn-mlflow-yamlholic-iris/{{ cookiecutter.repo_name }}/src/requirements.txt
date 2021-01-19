@@ -8,6 +8,7 @@ jupyterlab>=0.31.1
 kedro[pandas.CSVDataSet]=={{ cookiecutter.kedro_version }}
 mlflow
 nbstripout>=0.3.3
+pipelinex>=0.4.7
 plotly
 pytest-cov>=2.5
 pytest-mock>=1.7.1
