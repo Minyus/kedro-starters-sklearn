@@ -50,11 +50,10 @@ test_df:
   type: pandas.CSVDataSet
   filepath: data/01_raw/test.csv
 
-model: 
-  type: pickle.PickleDataSet
-  filepath: data/06_models/model.pkl
+model:
+  type: pipelinex.MLflowDataSet
+  dataset: pkl
 
 pred_df: 
-  type: pandas.CSVDataSet
-  filepath: data/07_model_output/pred.csv
-  save_args: {"float_format": "%.16e"}
+  type: pipelinex.MLflowDataSet
+  dataset: csv

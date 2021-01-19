@@ -29,10 +29,14 @@
 """Project settings."""
 from pipelinex import FlexibleContext
 from .hooks import ProjectHooks
+from .catalogs import add_catalog_dict_hook
 from .mlflow import mlflow_hooks
 
 # Instantiate and list your project hooks here
-HOOKS = (ProjectHooks(),) + mlflow_hooks
+HOOKS = (
+    ProjectHooks(),
+    add_catalog_dict_hook,
+) + mlflow_hooks
 
 # List the installed plugins for which to disable auto-registry
 # DISABLE_HOOKS_FOR_PLUGINS = ("kedro-viz",)
