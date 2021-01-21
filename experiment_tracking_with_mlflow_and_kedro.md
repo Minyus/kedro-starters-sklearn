@@ -18,31 +18,67 @@ Yusuke Minami
 
 ## Experiment Tracking & Model Management
 
-- Experiment Tracking by storing:
+- Experiment Tracking by storing metadata:
     - parameters (string)
         - model hyperparameters
         - Git commit hash/message
+        - Data version
     - metrics (numeric)
         - model metrics e.g. accuracy 
         - execution time
-- Model Management by storing:
-    - models
-    - visualization of model behaviors
-    - samples with which the model did not work well
+- Model Management by storing artifacts:
+    - models (pickle, PyTorch pth, TensorFlow SavedModel, etc.)
+    - visualization of model behaviors, e.g. confusion matrix (html, png)
+    - samples with which the model did not work well (csv)
 
-## Why MLflow?
+## Pain points
 
-- All features (except access control) are free for multiple users
-- Support Auto-logging
-- Support various backend databases with SQLAlchemy
-- Accessible to the backend database & storage even if MLflow server is down
+- Writing to text files
+    - Writing to a log files?
+        - hard to compare among multiple experiment runs
+    - Writing to a CSV file and upload to Google Drive?
+        - need to manually find the artifacts 
+- Writing to a database and storage
+    - We do not want to spend time on 
+        - writing data to database and storage
+        - developing an UI application
+
+## Tools
+
+```
+- MLflow
+- DVC
+- Pachyderm
+- Sacred
+- Polyaxon
+- Allegro Trains
+- VertaAI ModelDB
+- Guild AI
+- Kubeflow Metadata
+- Weights & Biases
+- Neptune.ai
+- Valohai
+- Comet
+```
 
 Reference:
 https://github.com/Minyus/Tools_for_ML_Lifecycle_Management
 
+
+## Why MLflow?
+
+- All features (except access control) are free for multiple users
+- Support various backend databases (MySQL, PostgreSQL, SQLite) with SQLAlchemy
+- Accessible to the backend database & storage without using MLflow server
+- Intuitive API & web UI
+- Support Auto-logging
+- Active development & community
+
+
 ## MLflow Architecture
 
 ![](https://raw.githubusercontent.com/Minyus/Tools_for_ML_Lifecycle_Management/main/mlflow/mlflow_architecture.drawio.svg)
+
 
 ## How MLflow works
 
@@ -50,11 +86,13 @@ https://github.com/Minyus/Tools_for_ML_Lifecycle_Management
 <img src="https://raw.githubusercontent.com/Minyus/Tools_for_ML_Lifecycle_Management/main/mlflow/mlflow_experiment_tracking.drawio.svg" height=500>
 </p>
 
+
 ## MLflow Web UI
 
 ![bg right:70%](https://raw.githubusercontent.com/Minyus/pipelinex_sklearn/master/img/mlflow_ui.png)
 
-## MLflow example Python code
+
+## MLflow Tracking Python code
 
 ```python
 import time
@@ -271,11 +309,6 @@ mlflow_hooks = (
         metric_env_vars=[],  # Environment variables to log to MLflow as metrics
     ),
     pipelinex.MLflowTimeLoggerHook(),  # Log duration time to run each node (task)
-    pipelinex.AddTransformersHook(
-        transformers=[
-            pipelinex.MLflowIOTimeLoggerTransformer()  # Log duration time to load and save each dataset
-        ],
-    ),  # Add transformers
 )
 ```
 
