@@ -6,14 +6,14 @@ paginate: true
 
 # Experiment Tracking & Model Management with MLflow and Kedro
 
-<p align="right">
-Yusuke Minami
-</p>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Yusuke Minami
 
-<p align="center">
-<img src="https://mlflow.org/docs/latest/_static/MLflow-logo-final-black.png" height=100>
-<img src="https://raw.githubusercontent.com/quantumblacklabs/kedro/develop/static/img/kedro_banner.png" height=250>
-</p>
+
+## Agenda
+
+1. Experiment Tracking & Model Maanagement
+2. How MLflow resolves pain points
+3. How Kedro resolves pain points 
 
 
 ## Experiment Tracking & Model Management
@@ -22,7 +22,7 @@ Yusuke Minami
     - parameters (string)
         - model hyperparameters
         - Git commit hash/message
-        - Data version
+        - data versions
     - metrics (numeric)
         - model metrics e.g. accuracy 
         - execution time
@@ -35,12 +35,12 @@ Yusuke Minami
 
 - Writing to text files
     - Writing to a log files?
-        - hard to compare among multiple experiment runs
+        - hard to compare 2+ experiment runs
     - Writing to a CSV file and upload to Google Drive?
-        - need to manually find the artifacts 
+        - hard to manage the artifacts 
 - Writing to a database and storage
     - We do not want to spend time on 
-        - writing data to database and storage
+        - coding access to database & storage
         - developing an UI application
 
 ## Tools
@@ -77,20 +77,34 @@ https://github.com/Minyus/Tools_for_ML_Lifecycle_Management
 
 ## MLflow Architecture
 
-![](https://raw.githubusercontent.com/Minyus/Tools_for_ML_Lifecycle_Management/main/mlflow/mlflow_architecture.drawio.svg)
+![](https://raw.githubusercontent.com/Minyus/Tools_for_ML_Lifecycle_Management/main/mlflow/mlflow_architecture.png)
 
 
 ## How MLflow works
 
-<p align="center">
-<img src="https://raw.githubusercontent.com/Minyus/Tools_for_ML_Lifecycle_Management/main/mlflow/mlflow_experiment_tracking.drawio.svg" height=500>
-</p>
+![](https://raw.githubusercontent.com/Minyus/Tools_for_ML_Lifecycle_Management/main/mlflow/mlflow_experiment_tracking.png)
 
 
 ## MLflow Web UI
 
 ![bg right:70%](https://raw.githubusercontent.com/Minyus/pipelinex_sklearn/master/img/mlflow_ui.png)
 
+
+## MLflow Tracking Python API
+
+```python
+import mlflow
+
+
+experiment_id = mlflow.get_experiment_by_name("experiment_name").experiment_id
+mlflow.start_run(experiment_id)
+
+mlflow.log_params({"param_name": "foo"})
+mlflow.log_metrics({"metric_name": 123})
+mlflow.log_artifact("local_path")
+
+mlflow.end_run()
+```
 
 ## MLflow Tracking Python code
 
@@ -106,7 +120,7 @@ if enable_mlflow:
     experiment_name = "experiment_001"
 
     experiment_id = mlflow.get_experiment_by_name(experiment_name).experiment_id
-    mlflow.start_run(experiment_id=experiment_id, run_name=None)
+    mlflow.start_run(experiment_id=experiment_id)
 
     mlflow.log_params(
         {
@@ -137,10 +151,10 @@ if enable_mlflow:
 Messy!
 
 - Not modular
-    - task processing code and MLflow logging code are mixed
+    - MLflow logging code would "contaminate" your processing code
     - MLflow logging is not needed in live services
 - No API for logging execution time
-    - Need to add 2 separate lines (before and after)
+    - Need to add 2 separate lines (before and after) or use a Python decorator
     - Need to specify unique names for each subtask
 
 ## Kedro can resolve the mess
@@ -163,6 +177,7 @@ Messy!
 ```
 
 ![bg 100% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
+
 
 ## Kedro project directory tree
 
@@ -207,6 +222,7 @@ catalog_dict = {
 ```
 
 ![bg 100% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
+
 
 ## nodes.py example: no Kedro/MLflow
 
@@ -368,6 +384,7 @@ Can be used together in different level
 Reference:
 https://github.com/Minyus/Python_Packages_for_Pipeline_Workflow
 
+
 ## Pros and cons of Kedro
 
 - Pros:
@@ -384,6 +401,7 @@ https://github.com/Minyus/Python_Packages_for_Pipeline_Workflow
 
 ![bg 90% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
 
+
 ## References
 
 MLflow's official document:
@@ -394,3 +412,12 @@ https://kedro.readthedocs.io/en/stable/index.html
 
 Kedro starters (Cookiecutter templates) using Scikit-learn and MLflow:
 https://github.com/Minyus/kedro-starters-sklearn
+
+
+## Summary
+
+- MLflow resolves pain points of Experiment Tracking & Model Management
+- but MLflow API would "contaminate" your processing code
+- but Kedro resolves the pain points by separating MLflow (and other data access) code from your processing code
+- and even support enabling/disabling parallel run
+- and can be used with/without Airflow
