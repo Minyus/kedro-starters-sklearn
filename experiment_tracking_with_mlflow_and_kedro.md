@@ -16,20 +16,30 @@ paginate: true
 3. How Kedro resolves pain points 
 
 
-## Experiment Tracking & Model Management
+## Experiment Tracking
 
 - Experiment Tracking by storing metadata:
-    - parameters (string)
-        - model hyperparameters
-        - Git commit hash/message
-        - data versions
-    - metrics (numeric)
-        - model metrics e.g. accuracy 
-        - execution time
+    - "parameters" (string)
+        - inputs
+            - model config/hyperparameters
+            - Git commit hash/message
+            - data versions
+    - "metrics" (numeric)
+        - inputs
+            - model config/hyperparameters
+        - outputs
+            - model evaluation metrics
+                - e.g. accuracy, F1 score
+            - execution time
+
+
+## Model Management
+
 - Model Management by storing artifacts:
     - models (pickle, PyTorch pth, TensorFlow SavedModel, etc.)
     - visualization of model behaviors, e.g. confusion matrix (html, png)
     - samples with which the model did not work well (csv)
+
 
 ## Pain points
 
@@ -87,7 +97,14 @@ https://github.com/Minyus/Tools_for_ML_Lifecycle_Management
 
 ## MLflow Web UI
 
-![bg right:70%](https://raw.githubusercontent.com/Minyus/pipelinex_sklearn/master/img/mlflow_ui.png)
+- Experiment Tracking
+    - search/filter/visualize params/metrics
+    - download experiment table CSV
+- Model Management
+    - view files: {text, image, html, pdf, geojson}
+    - download artifacts (e.g. models)
+
+![bg right:40%](https://raw.githubusercontent.com/Minyus/pipelinex_sklearn/master/img/mlflow_ui.png)
 
 
 ## MLflow Tracking Python API
@@ -202,7 +219,10 @@ Messy!
 
 ![bg 100% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
 
-## catalog.py example
+## Kedro Catalog (catalog.py)
+
+- Configure inputs & outputs ("DataSets")
+    - {file, database, storage, MLflow}
 
 ```python
 from kedro.extras.datasets.pandas import CSVDataSet
@@ -224,7 +244,7 @@ catalog_dict = {
 ![bg 100% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
 
 
-## nodes.py example: no Kedro/MLflow
+## Processing code (no Kedro/MLflow)
 
 ```python
 from logging import getLogger
@@ -268,7 +288,10 @@ def evaluate_model(model, df: pd.DataFrame, cols_features: List[str], col_target
 ![bg 100% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
 
 
-## pipeline.py example
+## Kedro Pipeline (pipeline.py)
+
+- Map Kedro DataSets and Python functions
+- Pipeline DAG will be automatically generated based on dependencies
 
 ```python
 Pipeline(
@@ -296,7 +319,23 @@ Pipeline(
 ![bg 100% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
 
 
-## mlflow_config.py example
+## Config (parameters.yml)
+
+- Optionally, values in YAML config file can be used as input datasets. 
+
+```yaml
+# Columns used as features (can specify "params:features" as an input dataset)
+features: 
+  - sepal_length
+
+# Column used as the target (can specify "params:target" as an input dataset)
+target: species
+```
+
+![bg 100% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
+
+
+## MLflow Config (mlflow_config.py)
 
 ```python
 import pipelinex
@@ -328,27 +367,11 @@ mlflow_hooks = (
 )
 ```
 
+## Available data interfaces
 
-## parameters.yml example
-
-```yaml
-# Columns used as features 
-features: 
-  - sepal_length
-
-# Column used as the target
-target: species
-```
-
-![bg 100% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
-
-
-## Data Read/Write
-
-- Kedro DataSet interface
-    - 25 DataSets in [kedro.extras.datasets](https://kedro.readthedocs.io/en/stable/kedro.extras.datasets.html#data-sets)
-        - [kedro.extras.datasets.pandas.CSVDataSet](https://kedro.readthedocs.io/en/stable/kedro.extras.datasets.pandas.CSVDataSet.html#kedro.extras.datasets.pandas.CSVDataSet)
-        - [kedro.extras.datasets.pickle.PickleDataSet](https://kedro.readthedocs.io/en/stable/kedro.extras.datasets.pickle.PickleDataSet.html#kedro.extras.datasets.pickle.PickleDataSet)
+- Kedro DataSet interfaces
+    - 25 Official DataSets in [kedro.extras.datasets](https://kedro.readthedocs.io/en/stable/kedro.extras.datasets.html#data-sets)
+        - Pickle, CSV, Parquet, Feather, SQL, text, YAML, JSON, GeoJSON, NetworkX, etc.
     - More DataSets in [pipelinex.extras.datasets](https://github.com/Minyus/pipelinex#additional-kedro-datasets-data-interface-sets)
         - [pipelinex.MLflowDataSet](https://github.com/Minyus/pipelinex/blob/master/src/pipelinex/extras/datasets/mlflow/mlflow_dataset.py)
         - [pipelinex.ImagesLocalDataSet](https://github.com/Minyus/pipelinex/blob/master/src/pipelinex/extras/datasets/pillow/images_dataset.py
@@ -368,6 +391,7 @@ pip install 'kedro>=0.17.0' mlflow pipelinex plotly
 ```
 
 ![bg 100% right:45%](https://raw.githubusercontent.com/Minyus/pipelinex_sklearn/master/img/mlflow_ui.png)
+
 
 ## Difference between Kedro and Airflow
 
@@ -390,7 +414,7 @@ https://github.com/Minyus/Python_Packages_for_Pipeline_Workflow
 - Pros:
     - High modularity/reusability
         - task processing
-        - read/write {file/storage/database} (with MLflow) 
+        - read/write {file/storage/DB} with/without MLflow 
         - non-task code 
             - measure execution time
     - Auto parallel run using `multiprocessing`
