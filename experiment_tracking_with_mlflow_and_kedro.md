@@ -167,9 +167,9 @@ if enable_mlflow:
 
 Messy!
 
-- Not modular
-    - MLflow logging code would "contaminate" your processing code
-    - MLflow logging is not needed in live services
+- MLflow code would "contaminate" your processing code
+    - becomes an obstacle to reuse your code in the live service
+    - becomes an obstacle for unit testing
 - No API for logging execution time
     - Need to add 2 separate lines (before and after) or use a Python decorator
     - Need to specify unique names for each subtask
