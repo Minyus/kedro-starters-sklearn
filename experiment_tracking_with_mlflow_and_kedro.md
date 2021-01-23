@@ -36,9 +36,11 @@ paginate: true
 ## Model Management
 
 - Model Management by storing artifacts:
-    - models (pickle, PyTorch pth, TensorFlow SavedModel, etc.)
-    - visualization of model behaviors, e.g. confusion matrix (html, png)
-    - samples with which the model did not work well (csv)
+    - models (e.g. pickle, PyTorch pt/pth, TensorFlow pb)
+    - visualization of model behaviors (e.g. html, png, pdf)
+      - e.g. confusion matrix
+    - sample predictions (e.g. csv)
+    - features & labels used for training (e.g. csv)
 
 
 ## Pain points
@@ -221,7 +223,7 @@ Messy!
 
 ## Kedro Catalog (catalog.py)
 
-- Configure inputs & outputs ("DataSets")
+- Configure "DataSets" (inputs & outputs of Python functions)
     - {file, database, storage, MLflow}
 
 ```python
@@ -247,15 +249,10 @@ catalog_dict = {
 ## Processing code (no Kedro/MLflow)
 
 ```python
-from logging import getLogger
 from typing import List
-
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import f1_score
-
-
-log = getLogger(__name__)
 
 
 def init_model():
@@ -267,8 +264,6 @@ def init_model():
 
 
 def train_model(model, df: pd.DataFrame, cols_features: List[str], col_target: str):
-    # TODO: Add validation (Hold-out or Cross-Validation)
-    # TODO: Add error handling
     model.fit(df[cols_features], df[col_target])
     return model
 
@@ -281,7 +276,6 @@ def run_inference(model, df: pd.DataFrame, cols_features: List[str]):
 def evaluate_model(model, df: pd.DataFrame, cols_features: List[str], col_target: str):
     y_pred = model.predict(df[cols_features])
     score = float(f1_score(df[col_target], y_pred))
-    log.info("F1 score: {:.3f}".format(score))
     return score
 ```
 
@@ -335,6 +329,21 @@ target: species
 ![bg 100% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
 
 
+## How Kedro DataSets are logged to MLflow 
+
+for DataSet in (inputs & outputs of Python functions):
+- if Dataset not in catalog:
+  - if DataSet in {float, int}: logged as an MLflow metric (numeric)
+  - if DataSet in {str, list, tuple, dict, set}: logged as an MLflow param (string)
+  - else (e.g. numpy arrays): not logged to the DB
+- if DataSet in catalog (e.g. `model: MLflowDataSet(dataset="pkl")`):
+  - if `dataset` == "m": logged as an MLflow metric (numeric)
+  - if `dataset` == "p": logged as an MLflow param (string)
+  - if `dataset` in {"json", "csv", "xls", "parquet", "pkl", "png", "jpg", "jpeg", "img", "txt", "yaml", "yml"}: logged as an MLflow artifact
+
+To upload any local files (e.g. zip, pt/pth, pb, h5, html, pdf, etc.) to MLflow, specify the paths in MLflowArtifactsLoggerHook as in the next slide. 
+
+
 ## MLflow Config (mlflow_config.py)
 
 ```python
@@ -344,8 +353,6 @@ mlflow_hooks = (
     pipelinex.MLflowBasicLoggerHook(
         uri="sqlite:///mlruns/sqlite.db",
         experiment_name="experiment_001",
-        artifact_location="./mlruns/experiment_001",
-        offset_hours=0,  # Specify the offset hour (e.g. 0 for UTC/GMT +00:00) to log in MLflow
     ),  # Configure and log duration time for the pipeline
     pipelinex.MLflowCatalogLoggerHook(
         auto=True,  # If True (default), for each dataset (Python func input/output) not listed in catalog, 
@@ -361,7 +368,6 @@ mlflow_hooks = (
         param_env_vars=[
             "HOSTNAME"
         ],  # Environment variables to log to MLflow as parameters
-        metric_env_vars=[],  # Environment variables to log to MLflow as metrics
     ),
     pipelinex.MLflowTimeLoggerHook(),  # Log duration time to run each node (task)
 )
