@@ -6,12 +6,12 @@ paginate: true
 
 # Experiment Tracking & Model Management with MLflow and Kedro
 
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Yusuke Minami
+Yusuke Minami
 
 
 ## Agenda
 
-1. Experiment Tracking & Model Maanagement
+1. Experiment Tracking & Model Management
 2. How MLflow resolves pain points
 3. How Kedro resolves pain points 
 
@@ -51,7 +51,7 @@ paginate: true
     - Writing to a CSV file and upload to Google Drive?
         - hard to manage the artifacts 
 - Writing to a database and storage
-    - We do not want to spend time on 
+    - We do not want to spend time on 
         - coding access to database & storage
         - developing an UI application
 
@@ -377,7 +377,7 @@ mlflow_hooks = (
 
 - Kedro DataSet interfaces
     - 25 Official DataSets in [kedro.extras.datasets](https://kedro.readthedocs.io/en/stable/kedro.extras.datasets.html#data-sets)
-        - Pickle, CSV, Parquet, Feather, SQL, text, YAML, JSON, GeoJSON, NetworkX, etc.
+        - Pickle, CSV, Parquet, Feather, SQL, text, YAML, JSON, GeoJSON, etc.
     - More DataSets in [pipelinex.extras.datasets](https://github.com/Minyus/pipelinex#additional-kedro-datasets-data-interface-sets)
         - [pipelinex.MLflowDataSet](https://github.com/Minyus/pipelinex/blob/master/src/pipelinex/extras/datasets/mlflow/mlflow_dataset.py)
         - [pipelinex.ImagesLocalDataSet](https://github.com/Minyus/pipelinex/blob/master/src/pipelinex/extras/datasets/pillow/images_dataset.py
