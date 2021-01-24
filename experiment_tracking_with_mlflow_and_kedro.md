@@ -234,7 +234,7 @@ Kedro: Python pipeline package which separates data interfaces and processing.
 
 - Centralized list of "DataSets" (data interfaces)
     - how/where to read/write data
-    - {file, database, storage, MLflow}
+    - {local file, remote storage, database} with/without MLflow 
 
 ```python
 from kedro.extras.datasets.pandas import CSVDataSet
@@ -431,7 +431,7 @@ https://github.com/Minyus/Python_Packages_for_Pipeline_Workflow
 - Pros:
     - High modularity/reusability
         - task processing
-        - read/write {file/storage/DB} with/without MLflow 
+        - read/write {local file, remote storage, database} with/without MLflow 
         - non-task code 
             - measure execution time
     - Auto parallel run using `multiprocessing`
