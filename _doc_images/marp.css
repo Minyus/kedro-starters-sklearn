@@ -1,0 +1,30 @@
+/* @theme standard */
+
+@import 'default';
+
+section {
+    width: 1280px;
+    height: 720px;
+}
+
+:root {
+    font-family: "Arial";
+    position: relative;
+}
+
+h1 {
+    font-family: "Arial";
+    color: blue;
+    font-size: 64px;
+    text-align: center;
+}
+
+h2 {
+    font-family: "Arial";
+    color: blue;
+    font-size: 36px;
+    position: absolute;
+    left: 100px;
+    top: 20px;
+}
+
