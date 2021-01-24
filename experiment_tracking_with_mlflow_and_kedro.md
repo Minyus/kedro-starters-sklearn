@@ -110,7 +110,7 @@ https://github.com/Minyus/Tools_for_ML_Lifecycle_Management
 ![](https://raw.githubusercontent.com/Minyus/Tools_for_ML_Lifecycle_Management/main/mlflow/mlflow_experiment_tracking.png)
 
 
-## MLflow Web UI for Experiment Tracking
+## UI for Experiment Tracking
 
 - view/search/filter/visualize params/metrics
 - download experiment table CSV file
@@ -118,7 +118,7 @@ https://github.com/Minyus/Tools_for_ML_Lifecycle_Management
 ![bg 100% right:50%](_doc_images/mlflow_ui_metrics.png)
 
 
-## MLflow Web UI for Model Management
+## UI for Model Management
 
 - view artifact files 
   - text, YAML, JSON
@@ -131,7 +131,7 @@ https://github.com/Minyus/Tools_for_ML_Lifecycle_Management
   - visualization
   - prediction samples
 
-![bg 100% right:60%](_doc_images/mlflow_ui_gantt.png)
+![bg 100% right:50%](_doc_images/mlflow_ui_gantt.png)
 
 
 ## MLflow Tracking Python API
