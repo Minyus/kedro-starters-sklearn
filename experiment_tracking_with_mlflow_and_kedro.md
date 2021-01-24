@@ -101,7 +101,7 @@ https://github.com/Minyus/Tools_for_ML_Lifecycle_Management
 
 ## MLflow Architecture
 
-![](https://raw.githubusercontent.com/Minyus/Tools_for_ML_Lifecycle_Management/main/mlflow/mlflow_architecture.png)
+![height:550px width:800px](https://raw.githubusercontent.com/Minyus/Tools_for_ML_Lifecycle_Management/main/mlflow/mlflow_architecture.png)
 
 
 ## How MLflow works
@@ -202,25 +202,9 @@ Messy!
 
 ## Kedro can resolve the mess
 
-Kedro: Python package (OSS) to build pipelines which separates data interfaces and processing.
+Kedro: Python pipeline package which separates data interfaces and processing.
 
-```
-- Catalog (Centralized list of how/where to read/write data)
-    - DataSet_1
-        - data format (e.g. csv, pickle, etc.)
-        - data location/path/URI of {file/storage/DB/MLflow}
-        - args
-    - DataSet_2
-- Python functions for any processing (no Kedro/MLflow code)
-- Pipeline (DAG; Python code or YAML)
-    - Node_1
-        - func: Python_function_1
-        - inputs: [DataSet_1, DataSet_2, ...]
-        - outputs: [DataSet_3, DataSet_4, ...]
-    - Node_2
-```
-
-![bg 100% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
+![height:530px](_doc_images/kedro_concept.png)
 
 
 ## Kedro project directory tree
@@ -248,8 +232,8 @@ Kedro: Python package (OSS) to build pipelines which separates data interfaces a
 
 ## Kedro Catalog (catalog.py)
 
-- Configure "DataSets"
-    - interface; how/where to read/write data
+- Centralized list of "DataSets" (data interfaces)
+    - how/where to read/write data
     - {file, database, storage, MLflow}
 
 ```python
