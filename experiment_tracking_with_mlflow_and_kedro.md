@@ -2,18 +2,27 @@
 marp: true
 headingDivider: 2
 paginate: true
+theme: default
+backgroundImage: url('https://images.pexels.com/photos/19670/pexels-photo.jpg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940')
 ---
+
 
 # Experiment Tracking & Model Management with MLflow and Kedro
 
+<!--
+_backgroundImage: url('https://images.pexels.com/photos/19670/pexels-photo.jpg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940')
+-->
+
+<p align=center>
 Yusuke Minami
+</p>
 
 
 ## Agenda
 
 1. Experiment Tracking & Model Management
-2. How MLflow resolves pain points
-3. How Kedro resolves pain points 
+2. How MLflow can resolve the pain points
+3. How Kedro can resolve the pain points 
 
 
 ## Experiment Tracking
@@ -80,10 +89,14 @@ https://github.com/Minyus/Tools_for_ML_Lifecycle_Management
 ## Why MLflow?
 
 - All features (except access control) are free for multiple users
-- Support various backend databases (MySQL, PostgreSQL, SQLite) with SQLAlchemy
+- Supports various backend databases with SQLAlchemy
+  - MySQL, PostgreSQL, SQLite
+- Supports various backend storages
+  - AWS S3, GCS (Google Cloud Storage), HDFS (Hadoop Distributed File System), etc.
 - Accessible to the backend database & storage without using MLflow server
 - Intuitive API & web UI
-- Support Auto-logging
+- Package-specific auto-logging option (experimental)
+  - TensorFlow/Keras, PyTorch Lightning, Scikit-learn, LightGBM, XGBoost, etc.
 - Active development & community
 
 
@@ -97,16 +110,28 @@ https://github.com/Minyus/Tools_for_ML_Lifecycle_Management
 ![](https://raw.githubusercontent.com/Minyus/Tools_for_ML_Lifecycle_Management/main/mlflow/mlflow_experiment_tracking.png)
 
 
-## MLflow Web UI
+## MLflow Web UI for Experiment Tracking
 
-- Experiment Tracking
-    - search/filter/visualize params/metrics
-    - download experiment table CSV
-- Model Management
-    - view files: {text, image, html, pdf, geojson}
-    - download artifacts (e.g. models)
+- view/search/filter/visualize params/metrics
+- download experiment table CSV file
 
-![bg right:40%](https://raw.githubusercontent.com/Minyus/pipelinex_sklearn/master/img/mlflow_ui.png)
+![bg 100% right:50%](_doc_images/mlflow_ui_metrics.png)
+
+
+## MLflow Web UI for Model Management
+
+- view artifact files 
+  - text, YAML, JSON
+  - image
+  - html
+  - pdf
+  - GeoJSON
+- download artifacts
+  - models
+  - visualization
+  - prediction samples
+
+![bg 100% right:60%](_doc_images/mlflow_ui_gantt.png)
 
 
 ## MLflow Tracking Python API
