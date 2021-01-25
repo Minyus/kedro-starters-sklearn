@@ -14,7 +14,10 @@ mlflow_hooks = (
         filepaths_before_pipeline_run=[
             "conf/base/parameters.yml"
         ],  # Optionally specify the file paths to log before the pipeline runs
-        filepaths_after_pipeline_run=[],  # Optionally specify the file paths to log after the pipeline runs
+        filepaths_after_pipeline_run=[
+            "logs/info.log",
+            "logs/errors.log",
+        ],  # Optionally specify the file paths to log after the pipeline runs
     ),
     pipelinex.MLflowEnvVarsLoggerHook(
         param_env_vars=[
