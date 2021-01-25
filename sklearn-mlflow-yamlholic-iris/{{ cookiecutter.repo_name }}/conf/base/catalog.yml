@@ -42,18 +42,33 @@
 # This is a data set used by the "Hello World" example pipeline provided with the project
 # template. Please feel free to remove it once you remove the example pipeline.
 
+# Read a csv file
 train_df:
   type: pandas.CSVDataSet
   filepath: data/01_raw/train.csv
 
+# Read a csv file
 test_df:
   type: pandas.CSVDataSet
   filepath: data/01_raw/test.csv
 
+# [MLflowDataSet]
+# if `dataset` arg is:
+# - {"pkl", "txt", "yaml", "yml", "json", "csv", "xls", "parquet", "png", "jpeg", "jpg"}: log as an MLflow artifact
+# - "m": log as an MLflow metric (numeric)
+# - "p": log as an MLflow param (string)
+
+# Write a pickle file & upload to MLflow
 model:
   type: pipelinex.MLflowDataSet
   dataset: pkl
 
+# Write a csv file & upload to MLflow
 pred_df: 
   type: pipelinex.MLflowDataSet
   dataset: csv
+
+# Write an MLflow metric
+score:
+  type: pipelinex.MLflowDataSet
+  dataset: m  
