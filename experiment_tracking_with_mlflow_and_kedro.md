@@ -46,24 +46,27 @@ Yusuke Minami
 - Model Management by storing artifacts:
     - models (e.g. pickle, PyTorch pt/pth, TensorFlow pb)
     - visualization of model behaviors (e.g. html, png, pdf)
-      - e.g. confusion matrix
+        - e.g. confusion matrix
     - sample predictions (e.g. csv)
     - features & labels used for training (e.g. csv)
+    - log files
 
 
 ## Pain points
 
-- Writing to text files
-    - Writing to a log files?
-        - hard to compare 2+ experiment runs
-    - Writing to a CSV file and upload to Google Drive?
-        - hard to manage the artifacts 
-- Writing to a database and storage
-    - We do not want to spend time on 
-        - coding access to database & storage
-        - developing an UI application
+Experiment Tracking:
+- Writing to an experiment CSV file?
+    - hard to share the updated results with teammates
+        - need to upload the CSV file to common storage (e.g. Google Drive)
+- Writing to a database?
+    - coding will be time-consuming  
 
-## Tools
+Model Management:
+- Hard to search artifact files
+
+Any solution that integrates database and storage with API and UI?
+
+## Tools for Experiment Tracking & Model Management
 
 ```
 - MLflow
@@ -232,33 +235,36 @@ Kedro: Python pipeline package which separates data interfaces and processing.
 
 ## Kedro Catalog (catalog.py)
 
-- Centralized list of "DataSets" (data interfaces)
-    - how/where to read/write data
-    - {local file, remote storage, database} with/without MLflow 
+Centralized list of "DataSets" (how/where to access {file, storage, database})
+
+```
+[MLflowDataSet]
+if `dataset` arg is:
+- {"pkl", "txt", "yaml", "yml", "json", "csv", "xls", "parquet", "png", "jpeg", "jpg"}: log as an MLflow artifact
+- "m": log as an MLflow metric (numeric)
+- "p": log as an MLflow param (string)
+```
 
 ```python
 from kedro.extras.datasets.pandas import CSVDataSet
 from pipelinex import MLflowDataSet
 
-
 catalog_dict = {
     "train_df": CSVDataSet(
-        filepath="data/01_raw/train.csv",
+        filepath="data/01_raw/train.csv",  # Read a csv file
     ),
     "test_df": CSVDataSet(
-        filepath="data/01_raw/test.csv",
+        filepath="data/01_raw/test.csv",  # Read a csv file
     ),
-    "model": MLflowDataSet(dataset="pkl"),
-    "pred_df": MLflowDataSet(dataset="csv"),
+    "model": MLflowDataSet(dataset="pkl"),  # Write a pickle file & upload to MLflow
+    "pred_df": MLflowDataSet(dataset="csv"),  # Write a csv file & upload to MLflow
+    "score": MLflowDataSet(dataset="m"),  # Write an MLflow metric
 }
 ```
 
-![bg 100% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
-
-
 ## Kedro Pipeline (pipeline.py)
 
-- For each input & output of Python functions, assign an unique Kedro "DataSet" (interface) name
+- For each input & output of Python functions, assign a Kedro "DataSet" (interface) name
 - Pipeline DAG will be automatically generated based on dependencies
 
 ```python
@@ -301,22 +307,6 @@ target: species
 ```
 
 ![bg 100% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
-
-
-## How Kedro DataSets are logged to MLflow 
-
-for DataSet_value in (inputs&outputs_of_Python_functions):
-- if DataSet_name not in catalog:
-  - if DataSet_value in {float, int}: log as an MLflow metric (numeric)
-  - if DataSet_value in {str, list, tuple, dict, set}: log as an MLflow param (string)
-  - else (e.g. numpy arrays): skip
-- if DataSet_name in catalog (e.g. `model: MLflowDataSet(dataset="pkl")`):
-  - if `dataset` == "m": log as an MLflow metric (numeric)
-  - if `dataset` == "p": log as an MLflow param (string)
-  - if `dataset` in {"pkl", "txt", "yaml", "yml", "json", "csv", "xls", "parquet", "png", "jpeg", "jpg"}: log as an MLflow artifact
-  
-
-To upload any local files (e.g. zip, pt/pth, pb, h5, html, pdf, etc.) to MLflow, specify the paths in MLflowArtifactsLoggerHook as in the next slide. 
 
 
 ## MLflow Config (mlflow_config.py)
@@ -460,5 +450,7 @@ https://github.com/Minyus/kedro-starters-sklearn
 - MLflow resolves pain points of Experiment Tracking & Model Management
 - but MLflow API would "contaminate" your processing code
 - but Kedro resolves the pain points by separating MLflow (and other data access) code from your processing code
-- and even support enabling/disabling parallel run
-- and can be used with/without Airflow
+- Kedro also supports parallel run
+- MLflow/Kedro can be used with/without Airflow
+
+![bg 90% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
