@@ -233,109 +233,6 @@ Kedro: Python pipeline package which separates data interfaces and processing.
 
 ![bg 100% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
 
-## Kedro Catalog (catalog.py)
-
-Centralized list of "DataSets" (how/where to access {file, storage, database})
-
-```
-[MLflowDataSet]
-if `dataset` arg is:
-- {"pkl", "txt", "yaml", "yml", "json", "csv", "xls", "parquet", "png", "jpeg", "jpg"}: log as an MLflow artifact
-- "m": log as an MLflow metric (numeric)
-- "p": log as an MLflow param (string)
-```
-
-```python
-from kedro.extras.datasets.pandas import CSVDataSet
-from pipelinex import MLflowDataSet
-
-catalog_dict = {
-    "train_df": CSVDataSet(
-        filepath="data/01_raw/train.csv",  # Read a csv file
-    ),
-    "test_df": CSVDataSet(
-        filepath="data/01_raw/test.csv",  # Read a csv file
-    ),
-    "model": MLflowDataSet(dataset="pkl"),  # Write a pickle file & upload to MLflow
-    "pred_df": MLflowDataSet(dataset="csv"),  # Write a csv file & upload to MLflow
-    "score": MLflowDataSet(dataset="m"),  # Write an MLflow metric
-}
-```
-
-## Kedro Pipeline (pipeline.py)
-
-- For each input & output of Python functions, assign a Kedro "DataSet" (interface) name
-- Pipeline DAG will be automatically generated based on dependencies
-
-```python
-Pipeline(
-    [
-        node(func=init_model, inputs=None, outputs="init_model"),
-        node(
-            inputs=["init_model", "train_df", "params:features", "params:target"],
-            func=train_model,
-            outputs="model",
-        ),
-        node(
-            inputs=["model", "train_df", "params:features", "params:target"],
-            func=evaluate_model,
-            outputs="score",
-        ),
-        node(
-            inputs=["model", "test_df", "params:features"],
-            func=run_inference,
-            outputs="pred_df",
-        ),
-    ]
-)
-```
-
-![bg 100% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
-
-
-## Config (parameters.yml)
-
-- Optionally, values in YAML config file can be used as input datasets. 
-
-```yaml
-# Columns used as features ("params:features" DataSet)
-features: 
-  - sepal_length
-
-# Column used as the target ("params:target" DataSet)
-target: species
-```
-
-![bg 100% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
-
-
-## MLflow Config (mlflow_config.py)
-
-```python
-import pipelinex
-
-mlflow_hooks = (
-    pipelinex.MLflowBasicLoggerHook(
-        uri="sqlite:///mlruns/sqlite.db",
-        experiment_name="experiment_001",
-    ),  # Configure and log duration time for the pipeline
-    pipelinex.MLflowCatalogLoggerHook(
-        auto=True,  # If True (default), for each dataset (Python func input/output) not listed in catalog, 
-        # log as a metric for {float, int} types, and log as a param for {str, list, tuple, dict, set} types.
-    ),  # Enable MLflowDataSet
-    pipelinex.MLflowArtifactsLoggerHook(
-        filepaths_before_pipeline_run=[
-            "conf/base/parameters.yml"
-        ],  # Optionally specify the file paths to log before the pipeline runs
-        filepaths_after_pipeline_run=[
-            "logs/info.log",
-            "logs/errors.log",
-        ],  # Optionally specify the file paths to log after the pipeline runs
-    ),
-    pipelinex.MLflowTimeLoggerHook(),  # Log duration time to run each node (task)
-)
-```
-
 ## Processing code (no Kedro/MLflow)
 
 ```python
@@ -372,6 +269,109 @@ def evaluate_model(model, df: pd.DataFrame, cols_features: List[str], col_target
 ![bg 100% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
 
 
+## Kedro Catalog (catalog.py)
+
+Centralized list of "DataSets" (how/where to access {file, storage, database})
+
+```
+[MLflowDataSet]
+if `dataset` arg is:
+- {"pkl", "txt", "yaml", "yml", "json", "csv", "xls", "parquet", "png", "jpeg", "jpg"}: log as an MLflow artifact
+- "m": log as an MLflow metric (numeric)
+- "p": log as an MLflow param (string)
+```
+
+```python
+from kedro.extras.datasets.pandas import CSVDataSet
+from pipelinex import MLflowDataSet
+
+catalog_dict = {
+    "train_df": CSVDataSet(
+        filepath="data/01_raw/train.csv",  # Read a csv file
+    ),
+    "test_df": CSVDataSet(
+        filepath="data/01_raw/test.csv",  # Read a csv file
+    ),
+    "model": MLflowDataSet(dataset="pkl"),  # Write a pickle file & upload to MLflow
+    "pred_df": MLflowDataSet(dataset="csv"),  # Write a csv file & upload to MLflow
+    "score": MLflowDataSet(dataset="m"),  # Write an MLflow metric
+}
+```
+
+## Config (parameters.yml)
+
+- Optionally, specify input DataSet values in YAML config file
+
+```yaml
+# Columns used as features ("params:features" DataSet)
+features: 
+  - sepal_length
+
+# Column used as the target ("params:target" DataSet)
+target: species
+```
+
+![bg 100% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
+
+
+## Kedro Pipeline (pipeline.py)
+
+- For each input & output of Python functions, assign a Kedro "DataSet" (interface) name
+- DAG will be inferred based on "DataSet" names
+
+```python
+Pipeline(
+    [
+        node(func=init_model, inputs=None, outputs="init_model"),
+        node(
+            inputs=["init_model", "train_df", "params:features", "params:target"],
+            func=train_model,
+            outputs="model",
+        ),
+        node(
+            inputs=["model", "train_df", "params:features", "params:target"],
+            func=evaluate_model,
+            outputs="score",
+        ),
+        node(
+            inputs=["model", "test_df", "params:features"],
+            func=run_inference,
+            outputs="pred_df",
+        ),
+    ]
+)
+```
+
+![bg 100% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
+
+
+## MLflow Config (mlflow_config.py)
+
+```python
+import pipelinex
+
+mlflow_hooks = (
+    pipelinex.MLflowBasicLoggerHook(
+        uri="sqlite:///mlruns/sqlite.db",
+        experiment_name="experiment_001",
+    ),  # Configure and log duration time for the pipeline
+    pipelinex.MLflowCatalogLoggerHook(
+        auto=True,  # If True (default), for each dataset (Python func input/output) not listed in catalog, 
+        # log as a metric for {float, int} types, and log as a param for {str, list, tuple, dict, set} types.
+    ),  # Enable MLflowDataSet
+    pipelinex.MLflowArtifactsLoggerHook(
+        filepaths_before_pipeline_run=[
+            "conf/base/parameters.yml"
+        ],  # Optionally specify the file paths to log before the pipeline runs
+        filepaths_after_pipeline_run=[
+            "logs/info.log",
+            "logs/errors.log",
+        ],  # Optionally specify the file paths to log after the pipeline runs
+    ),
+    pipelinex.MLflowTimeLoggerHook(),  # Log duration time to run each node (task)
+)
+```
+
 ## Available data interfaces
 
 - Kedro DataSet interfaces
@@ -398,20 +398,13 @@ pip install 'kedro>=0.17.0' mlflow pipelinex plotly
 ![bg 100% right:45%](https://raw.githubusercontent.com/Minyus/pipelinex_sklearn/master/img/mlflow_ui.png)
 
 
-## Difference between Kedro and Airflow
+## Airflow and Kedro
 
 ![](_doc_images/comp_airflow_kedro.drawio.svg)
 
 Can be used together in different level
 
-- Airflow DAG
-    - Airflow Operator1 => Kedro Pipeline1
-        - Kedro Node1
-        - Kedro Node2
-    - Airflow Operator2 => Kedro Pipeline2
-
-Reference:
-https://github.com/Minyus/Python_Packages_for_Pipeline_Workflow
+![](_doc_images/kedro_with_airflow.png)
 
 
 ## Pros and cons of Kedro
