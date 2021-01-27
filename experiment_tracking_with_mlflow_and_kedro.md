@@ -141,8 +141,17 @@ https://github.com/Minyus/Tools_for_ML_Lifecycle_Management
 ```python
 import mlflow
 
+experiment_name = "experiment_001"
+artifact_location="./mlruns/experiment_001",  # Ignored if the experiment_name already exists
 
-experiment_id = mlflow.get_experiment_by_name("experiment_name").experiment_id
+try:
+    experiment_id = mlflow.create_experiment(
+        name=experiment_name,
+        artifact_location=artifact_location
+    )
+except mlflow.exceptions.MlflowException:  # If the experiment already exists
+    experiment_id = mlflow.get_experiment_by_name("experiment_name").experiment_id
+
 mlflow.start_run(experiment_id)
 
 mlflow.log_params({"param_name": "foo"})
@@ -354,6 +363,7 @@ mlflow_hooks = (
     pipelinex.MLflowBasicLoggerHook(
         uri="sqlite:///mlruns/sqlite.db",
         experiment_name="experiment_001",
+        artifact_location="./mlruns/experiment_001",  # Ignored if the experiment_name already exists
     ),  # Configure and log duration time for the pipeline
     pipelinex.MLflowCatalogLoggerHook(
         auto=True,  # If True (default), for each dataset (Python func input/output) not listed in catalog, 
