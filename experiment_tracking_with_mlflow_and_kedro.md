@@ -37,7 +37,7 @@ Yusuke Minami
             - data versions
     - "metrics" (numeric)
         - inputs
-            - model config/hyperparameters (e.g. conv_kernel_ size=3)
+            - model config/hyperparameters (e.g. conv_kernel_size=3)
         - outputs
             - model evaluation metrics (e.g. accuracy, F1 score)
             - execution time
@@ -212,11 +212,18 @@ Messy!
     - becomes an obstacle for unit testing
 - No API for logging execution time
     - Need to add 2 separate lines (before and after) or use a Python decorator
-    - Need to specify unique names for each subtask
+    - Need to specify unique names for each processing
 
-## Kedro can resolve the mess
+Any solution?
 
-Kedro: Python pipeline package which separates data interfaces and processing.
+## Higher abstraction layer can resolve the mess
+
+![height:530px](_doc_images/abstraction_layers.png)
+
+
+## Kedro
+
+Python package to build pipelines which separate data interfaces and processing.
 
 ![height:530px](_doc_images/kedro_concept.png)
 
@@ -282,14 +289,14 @@ def evaluate_model(model, df: pd.DataFrame, cols_features: List[str], col_target
 
 ## Kedro Catalog (catalog.py)
 
-Centralized list of "DataSets" (how/where to access {file, storage, database})
+Centralized list of "DataSets" (interfaces for {files, storages, databases})
 
 ```
 [MLflowDataSet]
 if `dataset` arg is:
-- {"pkl", "txt", "yaml", "yml", "json", "csv", "xls", "parquet", "png", "jpeg", "jpg"}: log as an MLflow artifact
-- "m": log as an MLflow metric (numeric)
-- "p": log as an MLflow param (string)
+- {"pkl", "txt", "yaml", "yml", "json", "csv", "xls", "parquet", "png", "jpeg", "jpg"}: log as an artifact
+- "m": log as a metric (numeric)
+- "p": log as a param (string)
 ```
 
 ```python
@@ -423,7 +430,7 @@ Reference: https://kedro.readthedocs.io/en/stable/09_development/03_commands_ref
 ![bg 100% right:30%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
 
 
-## Debugging using Visual Studio Code (VS Code)
+## Debug using Visual Studio Code (VS Code)
 
 See the [VS Code document](https://code.visualstudio.com/docs/editor/debugging#_launch-configurations) and set up `launch.json` as follows.
 
@@ -479,9 +486,9 @@ To use a backend database for MLflow:
 - PostgreSQL: ` pip install psycopg2-binary ` 
 
 To use a backend storage for MLflow:
-- HDFS: ` pip install pyarrow `
 - AWS S3: ` pip install boto3 `
 - GCS: ` pip install google-cloud-storage `
+- HDFS: ` pip install pyarrow `
 
 To use Kedro interface of MLflow API: 
 - ` pip install kedro pipelinex plotly ` 
