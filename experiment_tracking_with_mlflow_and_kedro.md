@@ -23,6 +23,7 @@ Yusuke Minami
 1. Experiment Tracking & Model Management
 2. How MLflow can resolve the pain points
 3. How Kedro can resolve the pain points 
+4. Summary
 
 
 ## Experiment Tracking
@@ -399,14 +400,47 @@ mlflow_hooks = (
 - Include in task processing code: Low modularity, but often quicker in short-term
 
 
-## Installation
+## Kedro run options
 
+To run the pipeline 
 ```bash
-pip install 'kedro>=0.17.0' mlflow pipelinex plotly
+python -m kedro run
 ```
 
-![bg 100% right:45%](https://raw.githubusercontent.com/Minyus/pipelinex_sklearn/master/img/mlflow_ui.png)
+To run the pipeline in parallel
+```bash
+python -m kedro run --parallel
+```
 
+To resume the pipeline from stored intermediate data (e.g. features, models)
+```bash
+python -m kedro run --from-inputs dataset_1,dataset_2
+```
+
+Reference: https://kedro.readthedocs.io/en/stable/09_development/03_commands_reference.html
+
+![bg 100% right:30%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
+
+
+## Debugging using Visual Studio Code (VS Code)
+
+See the [VS Code document](https://code.visualstudio.com/docs/editor/debugging#_launch-configurations) and set up `launch.json` as follows.
+
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "My Project Debug Config",
+            "cwd": "/path/to/project/directory",
+            "type": "python",
+            "program": "main.py",
+            "request": "launch",
+            "console": "integratedTerminal"
+        }
+    ]
+}
+```
 
 ## Airflow and Kedro
 
@@ -432,6 +466,26 @@ Can be used together in different level
     - It may take some time to learn
 
 ![bg 90% right:35%](https://raw.githubusercontent.com/Minyus/kedro-starters-sklearn/master/_doc_images/kedro_viz.png)
+
+
+## Installation
+
+To use MLflow:
+- ` pip install mlflow `
+
+To use a backend database for MLflow:
+- MySQL: ` pip install PyMySQL `
+- PostgreSQL: ` pip install psycopg2-binary ` 
+
+To use a backend storage for MLflow:
+- HDFS: ` pip install pyarrow `
+- AWS S3: ` pip install boto3 `
+- GCS: ` pip install google-cloud-storage `
+
+To use Kedro interface of MLflow API: 
+- ` pip install kedro pipelinex plotly ` 
+
+![bg 100% right:40%](https://raw.githubusercontent.com/Minyus/pipelinex_sklearn/master/img/mlflow_ui.png)
 
 
 ## References
