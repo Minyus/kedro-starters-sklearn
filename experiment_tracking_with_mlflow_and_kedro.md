@@ -138,9 +138,11 @@ https://github.com/Minyus/Tools_for_ML_Lifecycle_Management
 ![bg 100% right:50%](_doc_images/mlflow_ui_gantt.png)
 
 
-## MLflow Tracking Python API
+## Python API for MLflow Tracking
 
 ```python
+# set MLFLOW_TRACKING_URI environment variable
+
 import mlflow
 
 experiment_name = "experiment_001"
@@ -163,7 +165,7 @@ mlflow.log_artifact("local_path")
 mlflow.end_run()
 ```
 
-## MLflow Tracking Python code
+## Example Python code for MLflow Tracking
 
 ```python
 import time
@@ -201,6 +203,32 @@ if enable_mlflow:
     mlflow.log_metrics(time_dict)
     mlflow.log_artifact(local_output_data_path)
     mlflow.end_run()
+```
+
+## Example Python code for searching & downloading
+
+```python
+from mlflow.tracking import MlflowClient
+from mlflow.entities import ViewType
+
+client = MlflowClient()
+
+run = client.search_runs(
+    experiment_ids="123",
+    filter_string="params.__time_begin = '2020-12-31T23:59:59'",
+    run_view_type=ViewType.ACTIVE_ONLY,
+    max_results=1,
+    order_by=[],  # ["metrics.score DESC"]
+)[0]
+
+run_id = run.info.run_id
+
+downloaded_path = client.download_artifacts(
+    run_id=run_id,
+    path="model.pkl",
+    dst_path="/tmp",
+)
+
 ```
 
 ## Problems of direct use of MLflow Python API
