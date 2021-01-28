@@ -54,7 +54,7 @@ Yusuke Minami
     - log files
 
 
-## Pain points
+## Pain points of Experiment Tracking & Model Management
 
 Experiment Tracking:
 - Writing to an experiment CSV file?
@@ -66,7 +66,7 @@ Experiment Tracking:
 Model Management:
 - Hard to search artifact files
 
-Any solution that integrates database and storage with API and UI?
+Any solution? 
 
 ## Tools for Experiment Tracking & Model Management
 
@@ -231,7 +231,7 @@ downloaded_path = client.download_artifacts(
 
 ```
 
-## Problems of direct use of MLflow Python API
+## Pain points of direct use of MLflow Python API
 
 Messy!
 
@@ -244,7 +244,7 @@ Messy!
 
 Any solution?
 
-## Higher abstraction layer can resolve the mess
+## Higher abstraction layer can resolve the pain points
 
 ![height:530px](_doc_images/abstraction_layers.png)
 
