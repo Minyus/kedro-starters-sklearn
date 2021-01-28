@@ -31,14 +31,15 @@ Yusuke Minami
 - Experiment Tracking by storing metadata:
     - "parameters" (string)
         - inputs
-            - model config/hyperparameters
-            - Git commit hash/message
+            - model config/hyperparameters (e.g. optimizer="Adam")
+            - Git commit hash (e.g. "d796df3")
+            - Git commit message (e.g. "Increase kernel size")
             - data versions
     - "metrics" (numeric)
         - inputs
-            - model config/hyperparameters
+            - model config/hyperparameters (e.g. conv_kernel_ size=3)
         - outputs
-            - model evaluation metrics e.g. accuracy, F1 score
+            - model evaluation metrics (e.g. accuracy, F1 score)
             - execution time
 
 
@@ -485,7 +486,7 @@ To use a backend storage for MLflow:
 To use Kedro interface of MLflow API: 
 - ` pip install kedro pipelinex plotly ` 
 
-![bg 100% right:40%](https://raw.githubusercontent.com/Minyus/pipelinex_sklearn/master/img/mlflow_ui.png)
+![bg 100% right:35%](https://raw.githubusercontent.com/Minyus/pipelinex_sklearn/master/img/mlflow_ui.png)
 
 
 ## References
