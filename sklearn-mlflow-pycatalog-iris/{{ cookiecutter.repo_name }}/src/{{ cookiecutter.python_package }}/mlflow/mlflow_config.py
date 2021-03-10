@@ -1,3 +1,8 @@
+"""
+Regarding MLflow hooks, please see the API document:
+https://pipelinex.readthedocs.io/en/latest/source/00_api_docs/pipelinex.extras.hooks.mlflow.html
+"""
+
 import pipelinex
 
 mlflow_hooks = (
@@ -5,30 +10,24 @@ mlflow_hooks = (
         uri="sqlite:///mlruns/sqlite.db",
         experiment_name="experiment_001",
         artifact_location="./mlruns/experiment_001",
-        offset_hours=0,  # Specify the offset hour (e.g. 0 for UTC/GMT +00:00) to log in MLflow
-    ),  # Configure and log duration time for the pipeline
+        offset_hours=0,
+    ),
     pipelinex.MLflowCatalogLoggerHook(
-        auto=True,  # If True (default), for each dataset (Python func input/output) not listed in catalog, log as a metric for {float, int} types, and log as a param for {str, list, tuple, dict, set} types.
-    ),  # Set dataset_name attribute in each MLflowDataSet instance
+        auto=True,
+    ),
     pipelinex.MLflowArtifactsLoggerHook(
-        filepaths_before_pipeline_run=[
-            "conf/base/parameters.yml"
-        ],  # Optionally specify the file paths to log before the pipeline runs
+        filepaths_before_pipeline_run=["conf/base/parameters.yml"],
         filepaths_after_pipeline_run=[
             "logs/info.log",
             "logs/errors.log",
-        ],  # Optionally specify the file paths to log after the pipeline runs
+        ],
     ),
     pipelinex.MLflowEnvVarsLoggerHook(
-        param_env_vars=[
-            "HOSTNAME"
-        ],  # Environment variables to log to MLflow as parameters
-        metric_env_vars=[],  # Environment variables to log to MLflow as metrics
+        param_env_vars=["HOSTNAME"],
+        metric_env_vars=[],
     ),
-    pipelinex.MLflowTimeLoggerHook(),  # Log duration time to run each node (task)
+    pipelinex.MLflowTimeLoggerHook(),
     pipelinex.AddTransformersHook(
-        transformers=[
-            pipelinex.MLflowIOTimeLoggerTransformer()  # Log duration time to load and save each dataset
-        ],
-    ),  # Add transformers
+        transformers=[pipelinex.MLflowIOTimeLoggerTransformer()],
+    ),
 )

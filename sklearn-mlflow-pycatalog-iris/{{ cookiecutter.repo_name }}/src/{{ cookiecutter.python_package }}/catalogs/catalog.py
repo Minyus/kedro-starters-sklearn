@@ -1,14 +1,13 @@
-""" DataSet objects can be defined here in addition to YAML ('conf/base/catalog.yml') """
+"""
+DataSet objects can be defined here in addition to YAML ('conf/base/catalog.yml') 
+
+Regarding MLflowDataSet, please see the API document:
+https://pipelinex.readthedocs.io/en/latest/source/00_api_docs/pipelinex.extras.datasets.mlflow.html#module-pipelinex.extras.datasets.mlflow.mlflow_dataset
+"""
 
 from kedro.extras.datasets.pandas import CSVDataSet
 from pipelinex import MLflowDataSet
-"""
-[MLflowDataSet]
-if `dataset` arg is:
-- {"pkl", "txt", "yaml", "yml", "json", "csv", "xls", "parquet", "png", "jpeg", "jpg"}: log as an MLflow artifact
-- "m": log as an MLflow metric (numeric)
-- "p": log as an MLflow param (string)
-"""
+
 
 catalog_dict = {
     "train_df": CSVDataSet(

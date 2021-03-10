@@ -52,11 +52,8 @@ test_df:
   type: pandas.CSVDataSet
   filepath: data/01_raw/test.csv
 
-# [MLflowDataSet]
-# if `dataset` arg is:
-# - {"pkl", "txt", "yaml", "yml", "json", "csv", "xls", "parquet", "png", "jpeg", "jpg"}: log as an MLflow artifact
-# - "m": log as an MLflow metric (numeric)
-# - "p": log as an MLflow param (string)
+# Regarding MLflowDataSet, please see the API document:
+# https://pipelinex.readthedocs.io/en/latest/source/00_api_docs/pipelinex.extras.datasets.mlflow.html#module-pipelinex.extras.datasets.mlflow.mlflow_dataset
 
 # Write a pickle file & upload to MLflow
 model:
@@ -64,11 +61,11 @@ model:
   dataset: pkl
 
 # Write a csv file & upload to MLflow
-pred_df: 
+pred_df:
   type: pipelinex.MLflowDataSet
   dataset: csv
 
 # Write an MLflow metric
 score:
   type: pipelinex.MLflowDataSet
-  dataset: m  
+  dataset: m
