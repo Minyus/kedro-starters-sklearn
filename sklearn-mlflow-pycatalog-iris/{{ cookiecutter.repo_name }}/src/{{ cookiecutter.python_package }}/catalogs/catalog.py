@@ -1,8 +1,11 @@
 """
-DataSet objects can be defined here in addition to YAML ('conf/base/catalog.yml') 
+Kedro DataSet objects can be defined here in addition to YAML ('conf/base/catalog.yml')
 
-Regarding MLflowDataSet, please see the API document:
-https://pipelinex.readthedocs.io/en/latest/source/00_api_docs/pipelinex.extras.datasets.mlflow.html#module-pipelinex.extras.datasets.mlflow.mlflow_dataset
+API document about the Available Kedro DataSets is at:
+https://kedro.readthedocs.io/en/stable/kedro.extras.datasets.html
+
+API document about MLflowDataSet is at:
+https://pipelinex.readthedocs.io/en/latest/pipelinex.extras.datasets.mlflow.html
 """
 
 from kedro.extras.datasets.pandas import CSVDataSet

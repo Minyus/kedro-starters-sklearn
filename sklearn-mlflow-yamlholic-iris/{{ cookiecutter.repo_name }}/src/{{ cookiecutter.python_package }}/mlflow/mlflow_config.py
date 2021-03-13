@@ -1,6 +1,6 @@
 """
-Regarding MLflow hooks, please see the API document:
-https://pipelinex.readthedocs.io/en/latest/source/00_api_docs/pipelinex.extras.hooks.mlflow.html
+API document about the Kedro hooks for MLflow is at:
+https://pipelinex.readthedocs.io/en/latest/pipelinex.extras.hooks.mlflow.html
 """
 
 import pipelinex
