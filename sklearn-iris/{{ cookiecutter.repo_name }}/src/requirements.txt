@@ -1,14 +1,14 @@
-black>=v19.10b0
-flake8>=3.7.9
-ipython>=7.0
-isort>=4.3.21
-jupyter>=1.0
-jupyter_client>=5.1
-jupyterlab>=0.31.1
-kedro[pandas.CSVDataSet]=={{ cookiecutter.kedro_version }}
-nbstripout>=0.3.3
-pytest-cov>=2.5
-pytest-mock>=1.7.1
-pytest>=5.0
+black~=22.0
+ipython>=7.31.1, <8.0; python_version < '3.8'
+ipython~=8.10; python_version >= '3.8'
+jupyter~=1.0
+jupyterlab~=3.0
+kedro~={{ cookiecutter.kedro_version }}
+kedro-viz~=6.0
+kedro-datasets[pandas.CSVDataset]~=1.0
+kedro-telemetry~=0.2.0
+pytest-cov~=3.0
+pytest-mock>=1.7.1, <2.0
+pytest~=7.2
+ruff~=0.0.290
 scikit-learn
-wheel>=0.32.2

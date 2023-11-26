@@ -1,5 +1,0 @@
-bandit>=1.6.2
-behave>=1.2.6
-black>=19.10b0
-isort>=4.3.21
-kedro>=0.17.0

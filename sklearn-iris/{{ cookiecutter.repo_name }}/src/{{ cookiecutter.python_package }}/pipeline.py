@@ -1,10 +1,15 @@
-from kedro.pipeline import Pipeline, node
+"""
+This is a boilerplate pipeline
+generated using Kedro {{ cookiecutter.kedro_version }}
+"""
+
+from kedro.pipeline import Pipeline, node, pipeline
 
 from .nodes import init_model, train_model, evaluate_model, run_inference
 
 
-def create_pipeline(**kwargs):
-    return Pipeline(
+def create_pipeline(**kwargs) -> Pipeline:
+    return pipeline(
         [
             node(func=init_model, inputs=None, outputs="init_model"),
             node(

@@ -1,6 +1,9 @@
-# pylint: disable=invalid-name
+"""
+This is a boilerplate pipeline
+generated using Kedro {{ cookiecutter.kedro_version }}
+"""
 
-from logging import getLogger
+import logging
 from typing import List
 
 import pandas as pd
@@ -8,7 +11,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import f1_score
 
 
-log = getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def init_model():
@@ -34,5 +37,5 @@ def run_inference(model, df: pd.DataFrame, cols_features: List[str]):
 def evaluate_model(model, df: pd.DataFrame, cols_features: List[str], col_target: str):
     y_pred = model.predict(df[cols_features])
     score = float(f1_score(df[col_target], y_pred))
-    log.info("F1 score: {:.3f}".format(score))
+    logger.info("F1 score: {:.3f}".format(score))
     return score
